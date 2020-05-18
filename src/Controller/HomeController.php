@@ -39,6 +39,18 @@ class HomeController extends AbstractController
     }
 
     /**
+     * @return string
+     *
+     * @Route("makeStat", name="makeStat")
+     */
+    public function getStat()
+    {
+        $stats=$this->makeStat(['adrien', 'mélanie', 'camille', 'baptiste']);
+        return $this->render('home/stat.html.twig', ['stats'=>$stats]);
+
+    }
+
+    /**
      * @param int $number : number of nickname to make
      * @return array
      */
@@ -60,5 +72,37 @@ class HomeController extends AbstractController
         }
 
         return $nicknames;
+    }
+
+    /**
+     * @param array $words
+     * @return array
+     */
+    private function makeStat(array $words) : array
+    {
+        $stat=[];
+
+        foreach ($words as $word) {
+            $word=trim($word)." ";
+            for ($i=1; $i<strlen($word)-1;$i++) {
+                $letter=$word[$i];
+                $previous=$word[$i-1];
+
+                if (array_key_exists($previous, $stat)) {
+                    if (array_key_exists($letter, $stat[$previous])) {
+                        $stat[$previous][$letter]++;
+                        $stat[$previous]['sum']++;
+                    } else {
+                        $stat[$previous][$letter]=1;
+                        $stat[$previous]['sum']=1;
+                    }
+                } else {
+                    $stat[$previous][$letter]=1;
+                    $stat[$previous]['sum']=1;
+                }
+            }
+        }
+
+        return $stat;
     }
 }
