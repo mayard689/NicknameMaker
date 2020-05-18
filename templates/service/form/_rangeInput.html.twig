@@ -1,0 +1,14 @@
+<div class="form-group">
+    <label for="{{ input.id }}">{{input.label}}</label>
+    <input type="range"
+           class="form-control"
+           id="{{ input.id }}"
+           aria-describedby="text"
+           placeholder="{{ input.placeholder }}"
+           name="{{ input.id }}"
+           value="{{ input.value }}"
+           min="{{ input.min }}"
+           max="{{ input.max }}
+    >
+    <small class="form-text text-muted">{{input.error}}</small>
+</div>
