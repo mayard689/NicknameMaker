@@ -45,7 +45,7 @@ class HomeController extends AbstractController
      */
     public function getStat()
     {
-        $stats=$this->makeStat(['adrien', 'mélanie', 'camille', 'baptiste']);
+        $stats=$this->makeStat(['adrien', 'melanie', 'camille', 'baptiste']);
         return $this->render('home/stat.html.twig', ['stats'=>$stats]);
 
     }
@@ -80,7 +80,15 @@ class HomeController extends AbstractController
      */
     private function makeStat(array $words) : array
     {
-        $stat=[];
+        $letterList=$this->getLetterList($words);
+
+        $stat['keys']=$letterList;
+        $stat['keys'][]='sum';
+
+        foreach($letterList as $letterAsColumn) {
+            $stat[$letterAsColumn]=  array_fill_keys($letterList,0);
+            $stat[$letterAsColumn]['sum']=0;
+        }
 
         foreach ($words as $word) {
             $word=trim($word)." ";
@@ -104,5 +112,11 @@ class HomeController extends AbstractController
         }
 
         return $stat;
+    }
+
+    private function getLetterList(array $words) : array
+    {
+        $total=implode("", $words)." ";
+        return array_unique(str_split($total,1));
     }
 }
