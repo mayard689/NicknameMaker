@@ -1,21 +1,34 @@
-{% set input = {
-    'label' : "votre nom",
-    'id' : "name",
-    'value' : "merlin",
-    'placeholder' : "John Doe",
-    'error' : ""
-    }
-%}
-{% include '/service/form/_textInput.html.twig' %}
+<form>
 
-{% set input = {
-    'label' : "Longueur de votre pseudonyme",
-    'id' : "length",
-    'value' : "9",
-    'placeholder' : "9",
-    'error' : "",
-    'min' : 3,
-    'max' : 15
-}
-%}
-{% include '/service/form/_rangeInput.html.twig' %}
+    {% set input = {
+            'label' : "votre nom",
+            'id' : "name",
+            'value' : "merlin",
+            'placeholder' : "John Doe",
+            'error' : ""
+        }
+    %}
+    {% include '/service/form/_textInput.html.twig' %}
+
+    {% set input = {
+            'label' : "Longueur de votre pseudonyme",
+            'id' : "length",
+            'value' : "9",
+            'placeholder' : "9",
+            'error' : "",
+            'min' : 3,
+            'max' : 15
+        }
+    %}
+    {% include '/service/form/_rangeInput.html.twig' %}
+
+.   {% set input = {
+            'label' : "Longueur de votre pseudonyme",
+            'id' : "",
+            'value' : "Génerer mes pseudonymes",
+        }
+    %}
+    {% include '/service/form/_submitInput.html.twig' %}.
+
+</form>
+
