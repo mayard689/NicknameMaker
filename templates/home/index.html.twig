@@ -1,7 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
-<body>
-    Ceci est mon NicknameMaker
-</body>
+{% block main %}
+
+    <div class="container">
+        {% include 'home/_nicknameForm.html.twig' %}
+    </div>
+
+    <div class="container">
+        {% include 'home/_nicknameResult.html.twig' %}
+    </div>
 {% endblock %}
