@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+use App\Services\Word\WordModel;
+
 /**
  * Class HomeController
  *
@@ -15,6 +17,7 @@ class HomeController extends AbstractController
 {
 
     /**
+     * Return the index file with "adrien" and "mélanie" as proposed nicknames
      * @return string
      *
      * @Route("index", name="index")
@@ -27,6 +30,7 @@ class HomeController extends AbstractController
     }
 
     /**
+     * Return the index with 3 random propositions 10 characters long
      * @return string
      *
      * @Route("makeName", name="makeName")
@@ -35,17 +39,33 @@ class HomeController extends AbstractController
     {
         $results=$this->generateNickName(3, 10);
         return $this->render('home/index.html.twig', ['results'=>$results]);
-
     }
 
     /**
+     * Return the index with 3 random propositions 10 characters long similar to the givne examples
+     * @param array $model
+     * @return Response
+     *
+     * @Route("makeModeledName", name="makeModeledName")
+     */
+    public function makeNameAccordingToModel(int $length=10, int $number=3, array $model=['adrien', 'melanie', 'camille', 'baptiste'])
+    {
+        $wordModel = new WordModel($model);
+        $results=$wordModel->generateWords($number, $length);
+        return $this->render('home/index.html.twig', ['results'=>$results]);
+    }
+
+    /**
+     * return a view with the statistics of the given wordlist
+     * <return a view to the
      * @return string
      *
-     * @Route("makeStat", name="makeStat")
+     * @Route("showStats", name="showStats")
      */
-    public function getStat()
+    public function getStat(array $words=['adrien', 'melanie', 'camille', 'baptiste'])
     {
-        $stats=$this->makeStat(['adrien', 'melanie', 'camille', 'baptiste']);
+        $wordModel = new WordModel($words);
+        $stats=$wordModel->getStats();
         return $this->render('home/stat.html.twig', ['stats'=>$stats]);
 
     }
@@ -74,49 +94,7 @@ class HomeController extends AbstractController
         return $nicknames;
     }
 
-    /**
-     * @param array $words
-     * @return array
-     */
-    private function makeStat(array $words) : array
-    {
-        $letterList=$this->getLetterList($words);
 
-        $stat['keys']=$letterList;
-        $stat['keys'][]='sum';
 
-        foreach($letterList as $letterAsColumn) {
-            $stat[$letterAsColumn]=  array_fill_keys($letterList,0);
-            $stat[$letterAsColumn]['sum']=0;
-        }
 
-        foreach ($words as $word) {
-            $word=trim($word)." ";
-            for ($i=1; $i<strlen($word)-1;$i++) {
-                $letter=$word[$i];
-                $previous=$word[$i-1];
-
-                if (array_key_exists($previous, $stat)) {
-                    if (array_key_exists($letter, $stat[$previous])) {
-                        $stat[$previous][$letter]++;
-                        $stat[$previous]['sum']++;
-                    } else {
-                        $stat[$previous][$letter]=1;
-                        $stat[$previous]['sum']=1;
-                    }
-                } else {
-                    $stat[$previous][$letter]=1;
-                    $stat[$previous]['sum']=1;
-                }
-            }
-        }
-
-        return $stat;
-    }
-
-    private function getLetterList(array $words) : array
-    {
-        $total=implode("", $words)." ";
-        return array_unique(str_split($total,1));
-    }
 }
