@@ -48,18 +48,27 @@ class HomeController extends AbstractController
      *
      * @Route("makeModeledName", name="makeModeledName")
      */
-    public function makeNameAccordingToModel(int $length=7, int $number=10, array $model=['adrien', 'melanie', 'camille', 'baptiste'])
+    public function makeNameAccordingToModel(int $length=7, int $number=10)
     {
 
+        //get available languages
+        $languages= ["français", "japonais"];
+
+        // check data
         $dataAndErrors=$this->validateFromGet();
         $data=$dataAndErrors['data'];
         $errors=$dataAndErrors['errors'];
 
-        //$wordModel = new WordModel($model);
-        //$wordModel = new WordModel("../assets/dictionnary/liste.de.mots.francais.frgut.txt");
-        $wordModel = new WordModel("../assets/dictionnary/japanese.txt");
+        $wordModel = new WordModel("../assets/dictionnary/".$data['language'].".txt");
         $results=$wordModel->generateWords($number, $length);
-        return $this->render('home/index.html.twig', ['results'=>$results, 'data'=>$data, 'errors'=>$errors]);
+        return $this->render('home/index.html.twig',
+            [
+                'results'=>$results,
+                'data'=>$data,
+                'errors'=>$errors,
+                'languages' => $languages,
+            ]
+        );
     }
 
     private function validateFromGet(){
@@ -83,6 +92,20 @@ class HomeController extends AbstractController
             $data['length']=7;
         }
 
+        // LANGUAGE
+        $acceptedLanguages=["français", "japonais"];
+        $key='language';
+        if (isset($_GET[$key])) {
+            $requestedLanguage=trim($_GET[$key]);
+            if (in_array($requestedLanguage, $acceptedLanguages)) {
+                $data[$key]=$requestedLanguage;
+            } else {
+                $errors[$key]="la langue doit être comprise dans la liste ". implode(",", $acceptedLanguages);
+            }
+        } else {
+            $data[$key]=$acceptedLanguages[0];
+        }
+
         // RETURN
         return ['data' => $data, 'errors' => $errors, 'validate' => $validate];
     }
@@ -97,7 +120,7 @@ class HomeController extends AbstractController
     public function getStat(array $words=['adrien', 'melanie', 'camille', 'baptiste'])
     {
         //$wordModel = new WordModel($words);
-        $wordModel = new WordModel("../assets/dictionnary/liste.de.mots.francais.frgut.txt");
+        $wordModel = new WordModel("../assets/dictionnary/français.txt");
         $stats=$wordModel->getStats();
         return $this->render('home/stat.html.twig', ['stats'=>$stats]);
 

@@ -1,0 +1,21 @@
+<div class="form-group">
+    <label for="{{ input.id }}">{{input.label}}</label>
+    <select type="text"
+           class="form-control"
+           id="{{ input.id }}"
+           aria-describedby="text"
+           name="{{ input.id }}"
+    >
+        {% for value in input.values %}
+            {% block optionManagement %}
+                <option
+                    value="{{ value.code }}"
+                    {%  if input.value == value.code %} selected {% endif %}
+                >
+                    {{ value.text }}
+                </option>
+            {% endblock %}
+        {% endfor %}
+    </select>
+    <small class="form-text text-muted">{{input.error}}</small>
+</div>

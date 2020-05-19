@@ -23,6 +23,16 @@
     {% include '/service/form/_rangeInput.html.twig' %}
 
     {% set input = {
+        'label' : "Sonorité",
+        'id' : "language",
+        'value' : data.language ?? 7,
+        'error' : errors.language ?? "",
+        'values' : languages,
+    }
+    %}
+    {% include '/service/form/_selectText.html.twig' %}
+
+    {% set input = {
             'label' : "",
             'id' : "",
             'value' : "Génerer mes pseudonymes",
