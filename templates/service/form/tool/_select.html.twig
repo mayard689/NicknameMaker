@@ -1,9 +1,7 @@
 <div class="form-group">
-    <label for="{{ input.id }}">{{input.label}}</label>
-    <select type="text"
-           class="form-control"
+    <label class="col-form-label" for="{{ input.id }}">{{input.label}}</label>
+    <select class="custom-select form-control"
            id="{{ input.id }}"
-           aria-describedby="text"
            name="{{ input.id }}"
     >
         {% for value in input.values %}

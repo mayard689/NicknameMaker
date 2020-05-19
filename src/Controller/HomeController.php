@@ -16,6 +16,8 @@ use App\Services\Word\WordModel;
 class HomeController extends AbstractController
 {
 
+    const USES=["consultant", "gamer"];
+
     /**
      * Return the index file with "adrien" and "mélanie" as proposed nicknames
      * @return string
@@ -67,6 +69,7 @@ class HomeController extends AbstractController
                 'data'=>$data,
                 'errors'=>$errors,
                 'languages' => $languages,
+                'uses' => self::USES,
             ]
         );
     }
@@ -104,6 +107,20 @@ class HomeController extends AbstractController
             }
         } else {
             $data[$key]=$acceptedLanguages[0];
+        }
+
+        // USE CASE
+        $acceptedList=self::USES;
+        $key='use';
+        if (isset($_GET[$key])) {
+            $requestedValue=trim($_GET[$key]);
+            if (in_array($requestedValue, $acceptedList)) {
+                $data[$key]=$requestedValue;
+            } else {
+                $errors[$key]="le cas d'usage doit être compris dans la liste ". implode(",", $acceptedList);
+            }
+        } else {
+            $data[$key]=$acceptedList[0];
         }
 
         // RETURN

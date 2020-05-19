@@ -11,6 +11,16 @@
     {% include '/service/form/_textInput.html.twig' %}
 
     {% set input = {
+        'label' : "Utilisation du pseudonyme",
+        'id' : "use",
+        'value' : data.use ?? "",
+        'error' : errors.use ?? "",
+        'values' : uses,
+    }
+    %}
+    {% include '/service/form/_selectText.html.twig' %}
+
+    {% set input = {
             'label' : "Longueur de votre pseudonyme",
             'id' : "length",
             'value' : data.length ?? 7,
