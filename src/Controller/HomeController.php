@@ -48,9 +48,11 @@ class HomeController extends AbstractController
      *
      * @Route("makeModeledName", name="makeModeledName")
      */
-    public function makeNameAccordingToModel(int $length=10, int $number=3, array $model=['adrien', 'melanie', 'camille', 'baptiste'])
+    public function makeNameAccordingToModel(int $length=7, int $number=10, array $model=['adrien', 'melanie', 'camille', 'baptiste'])
     {
-        $wordModel = new WordModel($model);
+        //$wordModel = new WordModel($model);
+        //$wordModel = new WordModel("../assets/dictionnary/liste.de.mots.francais.frgut.txt");
+        $wordModel = new WordModel("../assets/dictionnary/japanese.txt");
         $results=$wordModel->generateWords($number, $length);
         return $this->render('home/index.html.twig', ['results'=>$results]);
     }
@@ -64,7 +66,8 @@ class HomeController extends AbstractController
      */
     public function getStat(array $words=['adrien', 'melanie', 'camille', 'baptiste'])
     {
-        $wordModel = new WordModel($words);
+        //$wordModel = new WordModel($words);
+        $wordModel = new WordModel("../assets/dictionnary/liste.de.mots.francais.frgut.txt");
         $stats=$wordModel->getStats();
         return $this->render('home/stat.html.twig', ['stats'=>$stats]);
 

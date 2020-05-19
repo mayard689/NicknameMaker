@@ -2,11 +2,16 @@
 
 {% block main %}
 
-    <div class="container">
-        {% include 'home/_nicknameForm.html.twig' %}
+    <div class="result container">
+        <div class="row row-cols-1 row-cols-md-2 align-items-center justify-content-around">
+            <div class="col">
+                {% include 'home/_nicknameForm.html.twig' %}
+            </div>
+
+            <div class="col justify-content-center">
+                {% include 'home/_nicknameResult.html.twig' %}
+            </div>
+        </div>
     </div>
 
-    <div class="container">
-        {% include 'home/_nicknameResult.html.twig' %}
-    </div>
 {% endblock %}

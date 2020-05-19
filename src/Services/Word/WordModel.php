@@ -8,20 +8,40 @@ class WordModel
     protected $stats;
     protected $wordList;
 
-    public function __construct($wordList)
+    public function __construct()//array $wordList
     {
-        $this->wordList=$wordList;
-        $this->stats=$this->makeStat($wordList);
+        $wordList=[];
+
+        $args = func_get_args();
+
+        if (is_array($args[0])) {
+            $wordList=$args[0];
+        } elseif (is_string($args[0])) {
+            $file = fopen($args[0], 'rb');
+            while(!feof($file)) {
+                $line = fgets($file);
+                $wordList[]=$line;
+            }
+        }
+
+    $this->wordList=$wordList;
+    $this->stats=$this->makeStat($wordList);
+
     }
+
+
 
     public function getStats()
     {
         return $this->stats;
     }
 
-    public function generateWords(int $number, int $length)
+    public function generateWords(int $number, int $length, bool $withoutSpace=true)
     {
         $words=[];
+
+        //add 1 char since we want to add a space at the end
+        $length++;
 
         for ($i=0;$i<$number;$i++) {
             $word="";
@@ -41,7 +61,18 @@ class WordModel
                 }
             }
 
-            $words[]=$word;
+            //if the is no space into the word or if space are allowed
+            if((strpos(trim($word), " "))==false || (!$withoutSpace)) {
+                //if the words ends with a space (finish as words in the given list)
+                if (substr($word,-1)==" ") {
+                    $words[]=$word;
+                } else {
+                    $i--;
+                }
+            } else {
+                $i--;
+            }
+
         }
 
         return $words;
@@ -65,22 +96,12 @@ class WordModel
 
         foreach ($words as $word) {
             $word=" ".trim($word)." ";
-            for ($i=1; $i<strlen($word)-1;$i++) {
+            for ($i=1; $i<strlen($word);$i++) {
                 $letter=$word[$i];
                 $previous=$word[$i-1];
 
-                if (array_key_exists($previous, $stat)) {
-                    if (array_key_exists($letter, $stat[$previous])) {
-                        $stat[$previous][$letter]++;
-                        $stat[$previous]['sum']++;
-                    } else {
-                        $stat[$previous][$letter]=1;
-                        $stat[$previous]['sum']=1;
-                    }
-                } else {
-                    $stat[$previous][$letter]=1;
-                    $stat[$previous]['sum']=1;
-                }
+                $stat[$previous][$letter]++;
+                $stat[$previous]['sum']++;
             }
         }
 
