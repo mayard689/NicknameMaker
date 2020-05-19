@@ -1,14 +1,18 @@
 <div class="form-group">
     <label for="{{ input.id }}">{{input.label}}</label>
-    <input type="range"
-           class="form-control"
-           id="{{ input.id }}"
-           aria-describedby="text"
-           placeholder="{{ input.placeholder }}"
-           name="{{ input.id }}"
-           value="{{ input.value }}"
-           min="{{ input.min }}"
-           max="{{ input.max }}"
-    >
+    <div class="d-flex">
+        <span class="font-weight-bold p-2">{{ input.min }}</span>
+        <input type="range"
+               class="form-control-range"
+               id="{{ input.id }}"
+               aria-describedby="text"
+               placeholder="{{ input.placeholder }}"
+               name="{{ input.id }}"
+               value="{{ input.value }}"
+               min="{{ input.min }}"
+               max="{{ input.max }}"
+        >
+        <span class="font-weight-bold align-self-end p-2">{{ input.max }}</span>
+    </div>
     <small class="form-text text-muted">{{input.error}}</small>
 </div>

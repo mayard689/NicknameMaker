@@ -13,11 +13,11 @@
     {% set input = {
             'label' : "Longueur de votre pseudonyme",
             'id' : "length",
-            'value' : "9",
+            'value' : data.length ?? 7,
             'placeholder' : "9",
-            'error' : "",
-            'min' : 3,
-            'max' : 15
+            'error' : errors.length ?? "",
+            'min' : 2,
+            'max' : 12
         }
     %}
     {% include '/service/form/_rangeInput.html.twig' %}

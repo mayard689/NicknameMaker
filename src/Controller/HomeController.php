@@ -50,11 +50,41 @@ class HomeController extends AbstractController
      */
     public function makeNameAccordingToModel(int $length=7, int $number=10, array $model=['adrien', 'melanie', 'camille', 'baptiste'])
     {
+
+        $dataAndErrors=$this->validateFromGet();
+        $data=$dataAndErrors['data'];
+        $errors=$dataAndErrors['errors'];
+
         //$wordModel = new WordModel($model);
         //$wordModel = new WordModel("../assets/dictionnary/liste.de.mots.francais.frgut.txt");
         $wordModel = new WordModel("../assets/dictionnary/japanese.txt");
         $results=$wordModel->generateWords($number, $length);
-        return $this->render('home/index.html.twig', ['results'=>$results]);
+        return $this->render('home/index.html.twig', ['results'=>$results, 'data'=>$data, 'errors'=>$errors]);
+    }
+
+    private function validateFromGet(){
+
+        $data=[];
+        $errors=[];
+        $validate=true;
+
+        // LENGTH
+        $minLength=2;
+        $maxLength=12;
+
+        if (isset($_GET['length'])) {
+            $requestedLength=intval(trim($_GET['length']));
+            if (is_numeric($requestedLength) && $requestedLength<=$maxLength && $requestedLength>=$minLength) {
+                $data['length']=intval($requestedLength);
+            } else {
+                $errors['length']="La longueur doit être un nombre compris entre $minLength et $maxLength caractères.";
+            }
+        } else {
+            $data['length']=7;
+        }
+
+        // RETURN
+        return ['data' => $data, 'errors' => $errors, 'validate' => $validate];
     }
 
     /**
