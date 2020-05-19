@@ -4,8 +4,59 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "25e96ff4379254d82207cf6bd21ac6eb",
+    "content-hash": "d93aaabfcf04008d4bc1cb57e6f97d33",
     "packages": [
+        {
+            "name": "bitandblack/syllable-php",
+            "version": "1.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/wirbelwild/syllable-php.git",
+                "reference": "5fbd0b07fb255c7bee1757c873640123fb70ff3f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/wirbelwild/syllable-php/get/5fbd0b07fb255c7bee1757c873640123fb70ff3f.zip",
+                "reference": "5fbd0b07fb255c7bee1757c873640123fb70ff3f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": "^7.2"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12.0",
+                "phpunit/phpunit": "^8.0 || ^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "BitAndBlack\\Syllable\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tobias Köngeter",
+                    "email": "tobias.koengeter@bitandblack.com"
+                }
+            ],
+            "description": "PHP Syllable splitting and hyphenation",
+            "homepage": "https://www.bitandblack.com",
+            "keywords": [
+                "nlp",
+                "syllable",
+                "syllables",
+                "text",
+                "text-processing"
+            ],
+            "time": "2020-03-05T09:04:58+00:00"
+        },
         {
             "name": "doctrine/annotations",
             "version": "1.10.2",

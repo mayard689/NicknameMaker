@@ -17,6 +17,7 @@ class HomeController extends AbstractController
 {
 
     const USES=["consultant", "gamer"];
+    private $sound=[];
 
     /**
      * Return the index file with "adrien" and "mélanie" as proposed nicknames
@@ -54,7 +55,7 @@ class HomeController extends AbstractController
     {
 
         //get available languages
-        $languages= ["français", "japonais"];
+        $languages= ["français", "japonais","beaute"];
 
         // check data
         $dataAndErrors=$this->validateFromGet();
@@ -62,7 +63,7 @@ class HomeController extends AbstractController
         $errors=$dataAndErrors['errors'];
 
         $wordModel = new WordModel("../assets/dictionnary/".$data['language'].".txt");
-        $results=$wordModel->generateWords($number, $length);
+        $results=$wordModel->generateWordsFromBiLetters($number, $length);
         return $this->render('home/index.html.twig',
             [
                 'results'=>$results,
@@ -96,7 +97,7 @@ class HomeController extends AbstractController
         }
 
         // LANGUAGE
-        $acceptedLanguages=["français", "japonais"];
+        $acceptedLanguages=["français", "japonais", "beaute"];
         $key='language';
         if (isset($_GET[$key])) {
             $requestedLanguage=trim($_GET[$key]);
@@ -138,7 +139,7 @@ class HomeController extends AbstractController
     {
         //$wordModel = new WordModel($words);
         $wordModel = new WordModel("../assets/dictionnary/français.txt");
-        $stats=$wordModel->getStats();
+        $stats=$wordModel->getBiLetterStats();
         return $this->render('home/stat.html.twig', ['stats'=>$stats]);
 
     }
@@ -167,7 +168,26 @@ class HomeController extends AbstractController
         return $nicknames;
     }
 
+    private function generateNickNameFromName(string $name) : array {
 
+        $maleChar=['&','#','~','`','\\','@','!','§','£','$',':','<','>','|','°','%','*','+'];
+        $femaleChar=[];
+        $accentAndSpecialChar=[
+            'i'=>['î','ï', 'í', 'ì','1'],
+            'e'=>['ê', 'é', 'è', 'ë','€'],
+            'a'=>['å', 'à', 'á', 'â', 'ã', 'ä', 'æ','@','ª'],
+            'o'=>['ò', 'ó', 'ô', 'õ', 'ö', 'œ','0','Ø', 'º','°'],
+            'u'=>['ù', 'ú', 'û', 'ü'],
+            'y'=>['ý', 'ÿ'],
+            'f'=>['ƒ'],
+            's'=>['š','$'],
+            'z'=>['ž'],
+            'c'=>['©','ç'],
+            'r'=>['®'],
+        ];
+        $braces=['()','{}','[]','``','--','~~','<>','><','//','\\\\','/\\','\\/','**','%%','&&'];
+
+    }
 
 
 }
