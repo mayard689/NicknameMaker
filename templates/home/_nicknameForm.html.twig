@@ -1,54 +1,21 @@
-<form>
-
-    {% set input = {
-            'label' : "votre nom",
-            'id' : "name",
-            'value' : data.name ?? "",
-            'placeholder' : "John Doe",
-            'error' : error.name ?? ""
-        }
-    %}
-    {% include '/service/form/_textInput.html.twig' %}
-
-    {% set input = {
-        'label' : "Utilisation du pseudonyme",
-        'id' : "use",
-        'value' : data.use ?? "",
-        'error' : errors.use ?? "",
-        'values' : uses ?? "",
+{% set input = {
+    'label' : "votre nom",
+    'id' : "name",
+    'value' : "merlin",
+    'placeholder' : "John Doe",
+    'error' : ""
     }
-    %}
-    {% include '/service/form/_selectText.html.twig' %}
+%}
+{% include '/service/form/_textInput.html.twig' %}
 
-    {% set input = {
-            'label' : "Longueur de votre pseudonyme",
-            'id' : "length",
-            'value' : data.length ?? 7,
-            'placeholder' : "9",
-            'error' : errors.length ?? "",
-            'min' : 2,
-            'max' : 12
-        }
-    %}
-    {% include '/service/form/_rangeInput.html.twig' %}
-
-    {% set input = {
-        'label' : "Sonorité",
-        'id' : "language",
-        'value' : data.language ?? 7,
-        'error' : errors.language ?? "",
-        'values' : languages ?? "",
-    }
-    %}
-    {% include '/service/form/_selectText.html.twig' %}
-
-    {% set input = {
-            'label' : "",
-            'id' : "",
-            'value' : "Génerer mes pseudonymes",
-        }
-    %}
-    {% include '/service/form/_submitInput.html.twig' %}
-
-</form>
-
+{% set input = {
+    'label' : "Longueur de votre pseudonyme",
+    'id' : "length",
+    'value' : "9",
+    'placeholder' : "9",
+    'error' : "",
+    'min' : 3,
+    'max' : 15
+}
+%}
+{% include '/service/form/_rangeInput.html.twig' %}
