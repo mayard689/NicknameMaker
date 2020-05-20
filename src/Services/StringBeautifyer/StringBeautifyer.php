@@ -2,6 +2,8 @@
 
 namespace App\Services\StringBeautifyer;
 
+use App\Services\Name\Name;
+
 class StringBeautifyer
 {
 
@@ -47,7 +49,7 @@ class StringBeautifyer
 
             if (count($accentAndSpecial) > 0) {
                 $newChar=self::ACCENTS_AND_SPECIAL[$targetChar][rand(0,count(self::ACCENTS_AND_SPECIAL[$targetChar])-1)];
-                $beautified[]=ucwords(str_replace($targetChar,$newChar,$name));
+                $beautified[]=new Name(str_replace($targetChar,$newChar,$name));
             }
         }
 

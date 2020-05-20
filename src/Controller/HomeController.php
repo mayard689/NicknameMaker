@@ -108,7 +108,6 @@ class HomeController extends AbstractController
     private function consultant(int $number, array $data, string $model) :array
     {
         $list=[];
-        $list[]="consultant";
 
         $list=array_merge($list,StringBeautifyer::beautifyWithSpecial($data['name'],$number));
 
@@ -118,7 +117,6 @@ class HomeController extends AbstractController
     private function gamer(int $number, array $data, string $model) :array
     {
         $list=[];
-        $list[]="gamer";
 
         $data['language']="japonais";
         if ($model == "uni") {
