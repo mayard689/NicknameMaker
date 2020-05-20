@@ -13,6 +13,8 @@ use App\Services\Word\BiSyllableWordModel;
 
 use App\Services\Files\VariousFileTools;
 
+use App\Services\StringBeautifyer\StringBeautifyer;
+
 /**
  * Class HomeController
  *
@@ -49,11 +51,12 @@ class HomeController extends AbstractController
      */
     public function makeName($model="tri", int $number=10)
     {
-
         // check data
         $dataAndErrors=$this->validateFromGet();
         $data=$dataAndErrors['data'];
         $errors=$dataAndErrors['errors'];
+
+        StringBeautifyer::beautifyWithSpecial("adrien",5);
 
         //select a model depending on the route
         $wordModel=null;
@@ -156,27 +159,4 @@ class HomeController extends AbstractController
         return $this->render('home/stat.html.twig', ['stats'=>$stats]);
 
     }
-
-    private function generateNickNameFromName(string $name) : array {
-
-        $maleChar=['&','#','~','`','\\','@','!','§','£','$',':','<','>','|','°','%','*','+'];
-        $femaleChar=[];
-        $accentAndSpecialChar=[
-            'i'=>['î','ï', 'í', 'ì','1'],
-            'e'=>['ê', 'é', 'è', 'ë','€'],
-            'a'=>['å', 'à', 'á', 'â', 'ã', 'ä', 'æ','@','ª'],
-            'o'=>['ò', 'ó', 'ô', 'õ', 'ö', 'œ','0','Ø', 'º','°'],
-            'u'=>['ù', 'ú', 'û', 'ü'],
-            'y'=>['ý', 'ÿ'],
-            'f'=>['ƒ'],
-            's'=>['š','$'],
-            'z'=>['ž'],
-            'c'=>['©','ç'],
-            'r'=>['®'],
-        ];
-        $braces=['()','{}','[]','``','--','~~','<>','><','//','\\\\','/\\','\\/','**','%%','&&'];
-
-    }
-
-
 }
