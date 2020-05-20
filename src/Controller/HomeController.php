@@ -38,10 +38,29 @@ class HomeController extends AbstractController
      *
      * @Route("makeName", name="makeName")
      */
-    public function makeName()
+    public function makeName(int $number=10)
     {
-        $results=$this->generateNickName(3, 10);
-        return $this->render('home/index.html.twig', ['results'=>$results]);
+        //get available languages
+        $languages= ["français", "japonais", "beaute", "gamer"];
+
+        // check data
+        $dataAndErrors=$this->validateFromGet();
+        $data=$dataAndErrors['data'];
+        $errors=$dataAndErrors['errors'];
+
+        $wordModel = new WordModel("../assets/dictionnary/".$data['language'].".txt");
+        $results=$wordModel->generateWordsFromUniLetters($number, $data['length']);
+
+        //$results=$this->generateNickName(3, 10);
+        return $this->render('home/index.html.twig',
+            [
+                'results'=>$results,
+                'data'=>$data,
+                'errors'=>$errors,
+                'languages' => $languages,
+                'uses' => self::USES,
+            ]
+        );
     }
 
     /**
@@ -51,11 +70,11 @@ class HomeController extends AbstractController
      *
      * @Route("makeModeledName", name="makeModeledName")
      */
-    public function makeNameAccordingToModel(int $length=7, int $number=10)
+    public function makeNameAccordingToModel(int $number=10)
     {
 
         //get available languages
-        $languages= ["français", "japonais","beaute"];
+        $languages= ["français", "japonais", "allemand", "beaute", "gamer"];
 
         // check data
         $dataAndErrors=$this->validateFromGet();
@@ -63,7 +82,11 @@ class HomeController extends AbstractController
         $errors=$dataAndErrors['errors'];
 
         $wordModel = new WordModel("../assets/dictionnary/".$data['language'].".txt");
-        $results=$wordModel->generateWordsFromBiLetters($number, $length);
+
+        $results=$wordModel->generateWordsFromTriLetters($number, $data['length']);
+        //$results=$wordModel->generateWordsFromBiLetters($number, $data['length']);
+        //$results=$wordModel->generateWordsFromBiSyllables($number, $length);
+
         return $this->render('home/index.html.twig',
             [
                 'results'=>$results,
@@ -97,7 +120,7 @@ class HomeController extends AbstractController
         }
 
         // LANGUAGE
-        $acceptedLanguages=["français", "japonais", "beaute"];
+        $acceptedLanguages=["français", "japonais",  "allemand", "beaute","gamer"];
         $key='language';
         if (isset($_GET[$key])) {
             $requestedLanguage=trim($_GET[$key]);
@@ -138,34 +161,10 @@ class HomeController extends AbstractController
     public function getStat(array $words=['adrien', 'melanie', 'camille', 'baptiste'])
     {
         //$wordModel = new WordModel($words);
-        $wordModel = new WordModel("../assets/dictionnary/français.txt");
+        $wordModel = new WordModel("../assets/dictionnary/beaute.txt");
         $stats=$wordModel->getBiLetterStats();
         return $this->render('home/stat.html.twig', ['stats'=>$stats]);
 
-    }
-
-    /**
-     * @param int $number : number of nickname to make
-     * @return array
-     */
-    private function generateNickName(int $number, int $length) : array
-    {
-        $nicknames=[];
-
-        $availableCharacters='azertyuiopmlkjhgfdsqwxcvbn';
-        $availableCharactersNumbers=strlen($availableCharacters);
-
-        for ($i=0;$i<$number;$i++) {
-            $nickname="";
-
-            for ($j=0;$j<$length;$j++) {
-                $nickname .= $availableCharacters[rand(0, $availableCharactersNumbers - 1)];
-            }
-
-            $nicknames[]=$nickname;
-        }
-
-        return $nicknames;
     }
 
     private function generateNickNameFromName(string $name) : array {
