@@ -11,6 +11,8 @@ use App\Services\Word\BiLetterWordModel;
 use App\Services\Word\TriLetterWordModel;
 use App\Services\Word\BiSyllableWordModel;
 
+use App\Services\Files\VariousFileTools;
+
 /**
  * Class HomeController
  *
@@ -20,7 +22,12 @@ class HomeController extends AbstractController
 {
 
     const USES=["consultant", "gamer"];
-    private $sound=[];
+    private $languages;
+
+    public function __construct()
+    {
+        $this->languages=$this->getAvailableLanguages();
+    }
 
     /**
      * Return the index file with "adrien" and "mélanie" as proposed nicknames
@@ -42,9 +49,6 @@ class HomeController extends AbstractController
      */
     public function makeName($model="tri", int $number=10)
     {
-
-        //get available languages
-        $languages= ["français", "japonais", "allemand", "beaute", "gamer"];
 
         // check data
         $dataAndErrors=$this->validateFromGet();
@@ -72,10 +76,17 @@ class HomeController extends AbstractController
                 'results'=>$results,
                 'data'=>$data,
                 'errors'=>$errors,
-                'languages' => $languages,
+                'languages' => $this->languages,
                 'uses' => self::USES,
             ]
         );
+    }
+
+    private function getAvailableLanguages() : array
+    {
+        $path=$_SERVER['DOCUMENT_ROOT'].'../assets/dictionnary/';
+        $languages=VariousFileTools::getAvailableFiles($path);
+        return array_map(function($x){return substr($x,0,-4);}, $languages);
     }
 
     private function validateFromGet(){
@@ -100,17 +111,16 @@ class HomeController extends AbstractController
         }
 
         // LANGUAGE
-        $acceptedLanguages=["français", "japonais",  "allemand", "beaute","gamer"];
         $key='language';
         if (isset($_GET[$key])) {
             $requestedLanguage=trim($_GET[$key]);
-            if (in_array($requestedLanguage, $acceptedLanguages)) {
+            if (in_array($requestedLanguage, $this->languages)) {
                 $data[$key]=$requestedLanguage;
             } else {
-                $errors[$key]="la langue doit être comprise dans la liste ". implode(",", $acceptedLanguages);
+                $errors[$key]="la langue doit être comprise dans la liste ". implode(",", $this->languages);
             }
         } else {
-            $data[$key]=$acceptedLanguages[0];
+            $data[$key]=$this->languages;
         }
 
         // USE CASE

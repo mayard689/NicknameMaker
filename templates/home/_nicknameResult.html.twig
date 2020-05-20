@@ -1,5 +1,7 @@
-<ul>
-    {% for result in results %}
-        <li class="made-word">- {{ result }} -</li>
-    {% endfor %}
-</ul>
+{%  if result is defined %}
+    <ul>
+        {% for result in results %}
+                <li class="made-word">- {{ result }} -</li>
+        {% endfor %}
+    </ul>
+{%  endif %}
