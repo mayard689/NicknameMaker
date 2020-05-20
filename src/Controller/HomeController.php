@@ -55,23 +55,43 @@ class HomeController extends AbstractController
         $dataAndErrors=$this->validateFromGet();
         $data=$dataAndErrors['data'];
         $errors=$dataAndErrors['errors'];
+        $isFormValid=$dataAndErrors['validate'];
 
-        StringBeautifyer::beautifyWithSpecial("adrien",5);
+        $results=[];
 
-        //select a model depending on the route
-        $wordModel=null;
-        if ($model == "uni") {
-            $wordModel = new UniLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
-        } elseif ($model == "bi") {
-            $wordModel = new BiLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
-        } elseif ($model == "tri") {
-            $wordModel = new TriLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
-        } elseif ($model == "biSyl") {
-            $wordModel = new BiSyllableWordModel("../assets/dictionnary/".$data['language'].".txt");
+        //if everything is fine with data
+        if ($isFormValid){
+
+
+
+            //generate words
+            /*
+            $results=[];
+            if ( $data['use'] == "consultant" ) {
+                $results=$this->consultant($number, $data);
+            } */
+
+            if (method_exists($this, $data['use'])) {
+                $results=call_user_func_array([$this, $data['use']], array($number, $data, $model));
+            } else {
+                $wordModel=null;
+                //select a model depending on the route
+                if ($model == "uni") {
+                    $wordModel = new UniLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+                } elseif ($model == "bi") {
+                    $wordModel = new BiLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+                } elseif ($model == "tri") {
+                    $wordModel = new TriLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+                } elseif ($model == "biSyl") {
+                    $wordModel = new BiSyllableWordModel("../assets/dictionnary/".$data['language'].".txt");
+                }
+                $results=$wordModel->generateWords($number, $data['length']);
+            }
+
+
+
+
         }
-
-        //generate words
-        $results=$wordModel->generateWords($number, $data['length']);
 
         //render and build response
         return $this->render('home/index.html.twig',
@@ -83,6 +103,51 @@ class HomeController extends AbstractController
                 'uses' => self::USES,
             ]
         );
+    }
+
+    private function consultant(int $number, array $data, string $model) :array
+    {
+        $list=[];
+        $list[]="consultant";
+
+        $list=array_merge($list,StringBeautifyer::beautifyWithSpecial($data['name'],$number));
+
+        return $list;
+    }
+
+    private function gamer(int $number, array $data, string $model) :array
+    {
+        $list=[];
+        $list[]="gamer";
+
+        $data['language']="japonais";
+        if ($model == "uni") {
+            $wordModel = new UniLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+        } elseif ($model == "bi") {
+            $wordModel = new BiLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+        } elseif ($model == "tri") {
+            $wordModel = new TriLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+        } elseif ($model == "biSyl") {
+            $wordModel = new BiSyllableWordModel("../assets/dictionnary/".$data['language'].".txt");
+        }
+        $toBeDone=intdiv($number,2);
+        $results=$wordModel->generateWords($toBeDone, $data['length']);
+        $list=array_merge($list,$results);
+
+        $data['language']="allemand";
+        if ($model == "uni") {
+            $wordModel = new UniLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+        } elseif ($model == "bi") {
+            $wordModel = new BiLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+        } elseif ($model == "tri") {
+            $wordModel = new TriLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+        } elseif ($model == "biSyl") {
+            $wordModel = new BiSyllableWordModel("../assets/dictionnary/".$data['language'].".txt");
+        }
+        $results=$wordModel->generateWords($number-$toBeDone, $data['length']);
+        $list=array_merge($list,$results);
+
+        return $list;
     }
 
     private function getAvailableLanguages() : array
@@ -138,6 +203,21 @@ class HomeController extends AbstractController
             }
         } else {
             $data[$key]=$acceptedList[0];
+        }
+
+        // USE CASE
+        $key='name';
+        if (isset($_GET[$key])) {
+            $requestedValue=trim($_GET[$key]);
+            if (!empty($requestedValue)) {
+                $data[$key]=$requestedValue;
+            } else {
+                $errors[$key]="Vous devez indiquer un prénom ou un nom";
+                $validate=false;
+            }
+        } else {
+            $errors[$key]="Vous devez indiquer un prénom ou un nom";
+            $validate=false;
         }
 
         // RETURN
