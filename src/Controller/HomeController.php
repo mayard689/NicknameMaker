@@ -6,7 +6,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Services\Word\WordModel;
+use App\Services\Word\UniLetterWordModel;
+use App\Services\Word\BiLetterWordModel;
+use App\Services\Word\TriLetterWordModel;
+use App\Services\Word\BiSyllableWordModel;
 
 /**
  * Class HomeController
@@ -48,8 +51,8 @@ class HomeController extends AbstractController
         $data=$dataAndErrors['data'];
         $errors=$dataAndErrors['errors'];
 
-        $wordModel = new WordModel("../assets/dictionnary/".$data['language'].".txt");
-        $results=$wordModel->generateWordsFromUniLetters($number, $data['length']);
+        $wordModel = new UniLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+        $results=$wordModel->generateWords($number, $data['length']);
 
         //$results=$this->generateNickName(3, 10);
         return $this->render('home/index.html.twig',
@@ -81,11 +84,9 @@ class HomeController extends AbstractController
         $data=$dataAndErrors['data'];
         $errors=$dataAndErrors['errors'];
 
-        $wordModel = new WordModel("../assets/dictionnary/".$data['language'].".txt");
+        $wordModel = new TriLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
 
-        $results=$wordModel->generateWordsFromTriLetters($number, $data['length']);
-        //$results=$wordModel->generateWordsFromBiLetters($number, $data['length']);
-        //$results=$wordModel->generateWordsFromBiSyllables($number, $length);
+        $results=$wordModel->generateWords($number, $data['length']);
 
         return $this->render('home/index.html.twig',
             [
@@ -160,8 +161,8 @@ class HomeController extends AbstractController
      */
     public function getStat(array $words=['adrien', 'melanie', 'camille', 'baptiste'])
     {
-        //$wordModel = new WordModel($words);
-        $wordModel = new WordModel("../assets/dictionnary/beaute.txt");
+        //$wordModel = new UniLetterWordModel($words);
+        $wordModel = new UniLetterWordModel("../assets/dictionnary/beaute.txt");
         $stats=$wordModel->getBiLetterStats();
         return $this->render('home/stat.html.twig', ['stats'=>$stats]);
 
