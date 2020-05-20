@@ -2,6 +2,9 @@
 
 namespace App\Services\Name;
 
+use BitAndBlack\Syllable\Hyphen\Text;
+use BitAndBlack\Syllable\Syllable;
+
 class Name
 {
     private $name;
@@ -23,7 +26,7 @@ class Name
     {
         //first place on list
         if (preg_match('#[abc]#', $this->name[0])) {
-            $this->setReport('first',"Ce nom commençant par une des premières lettres de l'alphabet à l'avantage de se positionner en début de liste. Ceci est intéréssant pour améliorer sa visibilité dansl es systèmes de rechercher");
+            $this->setReport('first',"Comment par un ".$this->name[0].". Positionné en tête de listes alphabetiques.");
             $this->notes['position']=2;
         }
 
@@ -37,7 +40,7 @@ class Name
 
         $matches=[];
         if (preg_match("#([b-df-hj-np-tv-z]{3})#", $shortName, $matches)) {
-            $this->setReport('spelling',"Ce nom contient une suite de lettres (".$matches[0][0].") qui peut être difficile à lire. Il convient pour un usage écrit mais est 
+            $this->setReport('spelling',"La suite de lettres (".$matches[0][0].") peut être difficile à lire. Il convient pour un usage écrit mais est 
             à éviter si vous prévoyez de l'utiliser à l'oral. Il peut gêner les commentateurs lors de concours.");
         } elseif (preg_match("#[1-9]#", $shortName)) {
             $this->setReport('spelling',"Ce nom contient des chiffres qui peut être difficile à lire. Il convient pour un usage écrit mais est 
@@ -48,6 +51,24 @@ class Name
             $this->notes['spelling']=2;
         }
 
+        //syllable count
+        $syllable = new Syllable(
+            'fr',
+            $_SERVER['DOCUMENT_ROOT'].'../src/Services/Word/languages',
+            $_SERVER['DOCUMENT_ROOT'].'../src/Services/Word/cache',
+            new Text('-')
+        );
+        $syllablesList=$syllable->splitWord($this->name);
+        if (count($syllablesList) == 1 ) {
+            //var_dump($syllablesList);
+            $this->setReport('memory',"Avec 1 syllabe, ce nom est facilement mémorisable.");
+            $this->notes['memory']=2;
+        } elseif (count($syllablesList) == 2 ) {
+            $this->setReport('memory',"Avec 2 syllabes, ce nom est facilement mémorisable.");
+            $this->notes['memory']=2;
+        } elseif (count($syllablesList) > 3 ) {
+            $this->setReport('memory',"Avec ".count($syllablesList)." syllabes, ce nom est difficilement mémorisable.");
+        }
 
 
     }
@@ -88,6 +109,10 @@ class Name
 
     }
 
+    public function getReportList() : array
+    {
+        return $this->reportList;
+    }
     public function __toString() : string
     {
         return $this->name;

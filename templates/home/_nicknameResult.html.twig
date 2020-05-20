@@ -1,7 +1,37 @@
+{#
 {%  if results is defined %}
     <ul>
         {% for result in results %}
                 <li class="made-word">- {{ result }} -</li>
         {% endfor %}
     </ul>
+{%  endif %}
+#}
+
+{%  if results is defined %}
+<div class="container">
+
+    <div class="accordion" id="exempleAccordeon">
+
+        {% for index,result in results %}
+            <div class="card">
+                <div class="card-header" id="header_{{ index }}">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse_{{ index }}" aria-expanded="true" aria-controls="collapse_{{ index }}">{{ result }}</button>
+                </div>
+                <div id="collapse_{{ index }}" class="collapse" aria-labelledby="header_{{ index }}" data-parent="#exempleAccordeon">
+                    <div class="card-body">
+                        <p>Du texte à cacher / afficher grâce au composant collapse.</p>
+
+                        {% for paragraph in result.reportList %}
+                            <p class="small">{{paragraph}}</p>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+
+</div>
 {%  endif %}
