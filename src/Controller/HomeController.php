@@ -30,40 +30,7 @@ class HomeController extends AbstractController
      */
     public function index()
     {
-        $results=['adrien',"mélanie"];
-        return $this->render('home/index.html.twig', ['results'=>$results]);
-
-    }
-
-    /**
-     * Return the index with 3 random propositions 10 characters long
-     * @return string
-     *
-     * @Route("makeName", name="makeName")
-     */
-    public function makeName(int $number=10)
-    {
-        //get available languages
-        $languages= ["français", "japonais", "beaute", "gamer"];
-
-        // check data
-        $dataAndErrors=$this->validateFromGet();
-        $data=$dataAndErrors['data'];
-        $errors=$dataAndErrors['errors'];
-
-        $wordModel = new UniLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
-        $results=$wordModel->generateWords($number, $data['length']);
-
-        //$results=$this->generateNickName(3, 10);
-        return $this->render('home/index.html.twig',
-            [
-                'results'=>$results,
-                'data'=>$data,
-                'errors'=>$errors,
-                'languages' => $languages,
-                'uses' => self::USES,
-            ]
-        );
+        return $this->render('home/index.html.twig');
     }
 
     /**
@@ -71,9 +38,9 @@ class HomeController extends AbstractController
      * @param array $model
      * @return Response
      *
-     * @Route("makeModeledName", name="makeModeledName")
+     * @Route("makeName/{model<uni|bi|tri|biSyl>}", name="makeName")
      */
-    public function makeNameAccordingToModel(int $number=10)
+    public function makeName($model="tri", int $number=10)
     {
 
         //get available languages
@@ -84,10 +51,22 @@ class HomeController extends AbstractController
         $data=$dataAndErrors['data'];
         $errors=$dataAndErrors['errors'];
 
-        $wordModel = new TriLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+        //select a model depending on the route
+        $wordModel=null;
+        if ($model == "uni") {
+            $wordModel = new UniLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+        } elseif ($model == "bi") {
+            $wordModel = new BiLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+        } elseif ($model == "tri") {
+            $wordModel = new TriLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+        } elseif ($model == "biSyl") {
+            $wordModel = new BiSyllableWordModel("../assets/dictionnary/".$data['language'].".txt");
+        }
 
+        //generate words
         $results=$wordModel->generateWords($number, $data['length']);
 
+        //render and build response
         return $this->render('home/index.html.twig',
             [
                 'results'=>$results,
