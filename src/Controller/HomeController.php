@@ -100,27 +100,30 @@ class HomeController extends AbstractController
 
         $results=array_merge($results,StringBeautifyer::beautifyWithSpecial($data['name'],$number));
 
-        if (!empty($data['inspiration1'])){
-            $wordModel=WordModelRepository::getWordModel($model, [$data['inspiration1']]);
-            $results2=$wordModel->generateWords(5, $data['length']);
-            $results=array_merge($results,$results2);
-        }
-
         $this->setReferenceText($results, $data['name']);
         return $results;
     }
 
     private function gamer(int $number, array $data, string $model) :array
     {
-        $results1=[];
+        $results=[];
 
         $wordModel=WordModelRepository::getWordModel($model, "japonais");
         $toBeDone=intdiv($number,2);
-        $results1=$wordModel->generateWords($toBeDone, $data['length']);
+        $results=$wordModel->generateWords($toBeDone, $data['length']);
+
+        if (!empty($data['inspiration1'])){
+            $wordModel1=WordModelRepository::getWordModel($model, [$data['inspiration1']]);
+
+            $wordModel->merge($wordModel1,150);
+
+            $results2=$wordModel->generateWords(5, $data['length']);
+            $results=array_merge($results,$results2);
+        }
 
         $wordModel=WordModelRepository::getWordModel($model, "allemand");
         $results2=$wordModel->generateWords($number-$toBeDone, $data['length']);
-        $results=array_merge($results1,$results2);
+        $results=array_merge($results,$results2);
 
         $this->setReferenceText($results, $data['name']);
 

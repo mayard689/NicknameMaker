@@ -74,7 +74,12 @@ class TriLetterWordModel extends AbstractWordModel
 
         return $words;
     }
+/*
+    public function merge(AbstractWordModel $otherWordModel, int $force)
+    {
 
+    }
+    */
      /**
      * @param array $words
      * @return array
