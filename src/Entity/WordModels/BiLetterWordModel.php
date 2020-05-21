@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Services\Word;
+namespace App\Entity\WordModels;
+
+use App\Services\Name\Name;
 
 class BiLetterWordModel extends AbstractWordModel
 {
@@ -50,7 +52,7 @@ class BiLetterWordModel extends AbstractWordModel
             if((strpos(trim($word), " "))==false || (!$withoutSpace)) {
                 //if the words ends with a space (finish as words in the given list)
                 if (substr($word,-1)==" ") {
-                    $words[]=$word;
+                    $words[]=new Name($word, $this->modelName);
                 } else {
                     $i--;
                 }

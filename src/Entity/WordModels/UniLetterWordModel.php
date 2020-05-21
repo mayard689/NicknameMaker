@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Services\Word;
+namespace App\Entity\WordModels;
+
+use App\Services\Name\Name;
 
 class UniLetterWordModel extends AbstractWordModel
 {
@@ -40,7 +42,7 @@ class UniLetterWordModel extends AbstractWordModel
                 }
             }
 
-            $words[]=$word;
+            $words[]=new Name($word, $this->modelName);
         }
 
         return $words;

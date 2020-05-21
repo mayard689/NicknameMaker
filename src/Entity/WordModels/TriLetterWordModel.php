@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Word;
+namespace App\Entity\WordModels;
 
 use App\Services\Name\Name;
 
