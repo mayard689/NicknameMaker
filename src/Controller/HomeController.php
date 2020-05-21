@@ -193,6 +193,16 @@ class HomeController extends AbstractController
             false,
             null,
             $data, $errors, $validate);
+        $this->checkIfExistsInGet(
+            'inspiration2',
+            false,
+            null,
+            $data, $errors, $validate);
+        $this->checkIfExistsInGet(
+            'inspiration3',
+            false,
+            null,
+            $data, $errors, $validate);
 
         // RETURN
         return ['data' => $data, 'errors' => $errors, 'validate' => $validate];
