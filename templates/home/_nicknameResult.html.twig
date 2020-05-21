@@ -1,13 +1,3 @@
-{#
-{%  if results is defined %}
-    <ul>
-        {% for result in results %}
-                <li class="made-word">- {{ result }} -</li>
-        {% endfor %}
-    </ul>
-{%  endif %}
-#}
-
 {%  if results is defined %}
 <div class="container">
 
@@ -16,14 +6,17 @@
         {% for index,result in results %}
             <div class="card">
                 <div class="card-header" id="header_{{ index }}">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse_{{ index }}" aria-expanded="true" aria-controls="collapse_{{ index }}">{{ result }}</button>
+                    <button class="btn btn-link w-100 d-flex justify-content-between" type="button" data-toggle="collapse" data-target="#collapse_{{ index }}" aria-expanded="true" aria-controls="collapse_{{ index }}">
+                        <span>{{ result }}</span> <span>{{ result.standardNote }} / 10</span>
+                    </button>
                 </div>
                 <div id="collapse_{{ index }}" class="collapse" aria-labelledby="header_{{ index }}" data-parent="#exempleAccordeon">
                     <div class="card-body">
                         <p>Du texte à cacher / afficher grâce au composant collapse.</p>
 
-                        {% for paragraph in result.reportList %}
-                            <p class="small">{{paragraph}}</p>
+                        {% for index, paragraph in result.reportList %}
+
+                            <p class="small">{% include 'home/_reportIcons.html.twig' %}{{paragraph}}</p>
                         {% endfor %}
 
                     </div>
