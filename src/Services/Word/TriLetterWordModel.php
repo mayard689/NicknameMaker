@@ -2,6 +2,8 @@
 
 namespace App\Services\Word;
 
+use App\Services\Name\Name;
+
 class TriLetterWordModel extends AbstractWordModel
 {
     protected $wordList;
@@ -60,7 +62,7 @@ class TriLetterWordModel extends AbstractWordModel
             if((strpos(trim($word), " "))==false || (!$withoutSpace)) {
                 //if the words ends with a space (finish as words in the given list)
                 if (substr($word,-1)==" ") {
-                    $words[]=$word;
+                    $words[]=new Name($word, $this->modelName);
                 } else {
                     $i--;
                 }

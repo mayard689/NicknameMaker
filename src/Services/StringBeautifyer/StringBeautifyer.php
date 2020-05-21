@@ -2,6 +2,8 @@
 
 namespace App\Services\StringBeautifyer;
 
+use App\Services\Name\Name;
+
 class StringBeautifyer
 {
 
@@ -10,7 +12,7 @@ class StringBeautifyer
     const ACCENTS_AND_SPECIAL=[
         'i'=>['î','ï', 'í', 'ì','1'],
         'e'=>['ê', 'é', 'è', 'ë','€'],
-        'a'=>['å', 'à', 'á', 'â', 'ã', 'ä', 'æ','@','ª'],
+        'a'=>['å', 'à', 'á', 'â', 'ã', 'ä', 'æ','@','ª','ą'],
         'o'=>['ò', 'ó', 'ô', 'õ', 'ö', 'œ','0','Ø', 'º','°'],
         'u'=>['ù', 'ú', 'û', 'ü'],
         'y'=>['ý', 'ÿ'],
@@ -47,7 +49,7 @@ class StringBeautifyer
 
             if (count($accentAndSpecial) > 0) {
                 $newChar=self::ACCENTS_AND_SPECIAL[$targetChar][rand(0,count(self::ACCENTS_AND_SPECIAL[$targetChar])-1)];
-                $beautified[]=ucwords(str_replace($targetChar,$newChar,$name));
+                $beautified[]=new Name(str_replace($targetChar,$newChar,$name),"beautifyer");
             }
         }
 

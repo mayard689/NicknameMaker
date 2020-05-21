@@ -1,7 +1,30 @@
 {%  if results is defined %}
-    <ul>
-        {% for result in results %}
-                <li class="made-word">- {{ result }} -</li>
+<div class="container">
+
+    <div class="accordion" id="exempleAccordeon">
+
+        {% for index,result in results %}
+            <div class="card">
+                <div class="card-header" id="header_{{ index }}">
+                    <button class="btn btn-link w-100 d-flex justify-content-between" type="button" data-toggle="collapse" data-target="#collapse_{{ index }}" aria-expanded="true" aria-controls="collapse_{{ index }}">
+                        <span>{{ result }}</span> <span>{{ result.standardNote }} / 10</span>
+                    </button>
+                </div>
+                <div id="collapse_{{ index }}" class="collapse" aria-labelledby="header_{{ index }}" data-parent="#exempleAccordeon">
+                    <div class="card-body">
+                        <p>Du texte à cacher / afficher grâce au composant collapse.</p>
+
+                        {% for index, paragraph in result.reportList %}
+
+                            <p class="small">{% include 'home/_reportIcons.html.twig' %}{{paragraph}}</p>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </ul>
+
+    </div>
+
+</div>
 {%  endif %}

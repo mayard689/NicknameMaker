@@ -62,15 +62,6 @@ class HomeController extends AbstractController
         //if everything is fine with data
         if ($isFormValid){
 
-
-
-            //generate words
-            /*
-            $results=[];
-            if ( $data['use'] == "consultant" ) {
-                $results=$this->consultant($number, $data);
-            } */
-
             if (method_exists($this, $data['use'])) {
                 $results=call_user_func_array([$this, $data['use']], array($number, $data, $model));
             } else {
@@ -86,6 +77,7 @@ class HomeController extends AbstractController
                     $wordModel = new BiSyllableWordModel("../assets/dictionnary/".$data['language'].".txt");
                 }
                 $results=$wordModel->generateWords($number, $data['length']);
+                $this->setReferenceText($results, $data['name']);
             }
 
 
@@ -105,49 +97,57 @@ class HomeController extends AbstractController
         );
     }
 
+    private function setReferenceText(array $results, $referenceText) : array
+    {
+        foreach($results as $result) {
+            $result->setReferenceText($referenceText);
+        }
+
+        return $results;
+    }
+
     private function consultant(int $number, array $data, string $model) :array
     {
-        $list=[];
-        $list[]="consultant";
+        $results=[];
 
-        $list=array_merge($list,StringBeautifyer::beautifyWithSpecial($data['name'],$number));
-
-        return $list;
+        $results=array_merge($results,StringBeautifyer::beautifyWithSpecial($data['name'],$number));
+        $this->setReferenceText($results, $data['name']);
+        return $results;
     }
 
     private function gamer(int $number, array $data, string $model) :array
     {
-        $list=[];
-        $list[]="gamer";
+        $results1=[];
 
         $data['language']="japonais";
         if ($model == "uni") {
-            $wordModel = new UniLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+            $wordModel = new UniLetterWordModel($data['language']);
         } elseif ($model == "bi") {
-            $wordModel = new BiLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+            $wordModel = new BiLetterWordModel($data['language']);
         } elseif ($model == "tri") {
-            $wordModel = new TriLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+            $wordModel = new TriLetterWordModel($data['language']);
         } elseif ($model == "biSyl") {
-            $wordModel = new BiSyllableWordModel("../assets/dictionnary/".$data['language'].".txt");
+            $wordModel = new BiSyllableWordModel($data['language']);
         }
         $toBeDone=intdiv($number,2);
-        $results=$wordModel->generateWords($toBeDone, $data['length']);
-        $list=array_merge($list,$results);
+        $results1=$wordModel->generateWords($toBeDone, $data['length']);
 
         $data['language']="allemand";
         if ($model == "uni") {
-            $wordModel = new UniLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+            $wordModel = new UniLetterWordModel($data['language']);
         } elseif ($model == "bi") {
-            $wordModel = new BiLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+            $wordModel = new BiLetterWordModel($data['language']);
         } elseif ($model == "tri") {
-            $wordModel = new TriLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
+            $wordModel = new TriLetterWordModel($data['language']);
         } elseif ($model == "biSyl") {
-            $wordModel = new BiSyllableWordModel("../assets/dictionnary/".$data['language'].".txt");
+            $wordModel = new BiSyllableWordModel($data['language']);
         }
-        $results=$wordModel->generateWords($number-$toBeDone, $data['length']);
-        $list=array_merge($list,$results);
+        $results2=$wordModel->generateWords($number-$toBeDone, $data['length']);
+        $results=array_merge($results1,$results2);
 
-        return $list;
+        $this->setReferenceText($results, $data['name']);
+
+        return $results;
     }
 
     private function getAvailableLanguages() : array

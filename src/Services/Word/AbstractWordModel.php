@@ -5,6 +5,7 @@ namespace App\Services\Word;
 abstract class AbstractWordModel
 {
     protected $wordList;
+    protected $modelName;
 
     public function __construct()//array $wordList
     {
@@ -14,8 +15,11 @@ abstract class AbstractWordModel
 
         if (is_array($args[0])) {
             $wordList=$args[0];
+            $this->modelName="freeList";
         } elseif (is_string($args[0])) {
-            $file = fopen($args[0], 'rb');
+            $this->modelName=$args[0];
+            $path="../assets/dictionnary/".$args[0].".txt";
+            $file = fopen($path, 'rb');
             while(!feof($file)) {
                 $line = fgets($file);
                 $wordList[]=strtolower($line);
