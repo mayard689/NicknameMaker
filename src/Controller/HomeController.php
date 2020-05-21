@@ -6,10 +6,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-use App\Services\Word\UniLetterWordModel;
-use App\Services\Word\BiLetterWordModel;
-use App\Services\Word\TriLetterWordModel;
-use App\Services\Word\BiSyllableWordModel;
+use App\Entity\WordModels\UniLetterWordModel;
+use App\Entity\WordModels\BiLetterWordModel;
+use App\Entity\WordModels\TriLetterWordModel;
+use App\Entity\WordModels\BiSyllableWordModel;
+
+use App\Repository\WordModelRepository;
 
 use App\Services\Files\VariousFileTools;
 
@@ -28,7 +30,7 @@ class HomeController extends AbstractController
 
     public function __construct()
     {
-        $this->languages=$this->getAvailableLanguages();
+        $this->languages=WordModelRepository::getAvailableLanguages();
     }
 
     /**
@@ -65,6 +67,7 @@ class HomeController extends AbstractController
             if (method_exists($this, $data['use'])) {
                 $results=call_user_func_array([$this, $data['use']], array($number, $data, $model));
             } else {
+                /*
                 $wordModel=null;
                 //select a model depending on the route
                 if ($model == "uni") {
@@ -75,14 +78,11 @@ class HomeController extends AbstractController
                     $wordModel = new TriLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
                 } elseif ($model == "biSyl") {
                     $wordModel = new BiSyllableWordModel("../assets/dictionnary/".$data['language'].".txt");
-                }
+                }*/
+                $wordModel=WordModelRepository::getWordModel($model, $data['language']);
                 $results=$wordModel->generateWords($number, $data['length']);
                 $this->setReferenceText($results, $data['name']);
             }
-
-
-
-
         }
 
         //render and build response
@@ -120,7 +120,7 @@ class HomeController extends AbstractController
         $results1=[];
 
         $data['language']="japonais";
-        if ($model == "uni") {
+        /*if ($model == "uni") {
             $wordModel = new UniLetterWordModel($data['language']);
         } elseif ($model == "bi") {
             $wordModel = new BiLetterWordModel($data['language']);
@@ -128,12 +128,13 @@ class HomeController extends AbstractController
             $wordModel = new TriLetterWordModel($data['language']);
         } elseif ($model == "biSyl") {
             $wordModel = new BiSyllableWordModel($data['language']);
-        }
+        }*/
+        $wordModel=WordModelRepository::getWordModel($model, $data['language']);
         $toBeDone=intdiv($number,2);
         $results1=$wordModel->generateWords($toBeDone, $data['length']);
 
         $data['language']="allemand";
-        if ($model == "uni") {
+        /*if ($model == "uni") {
             $wordModel = new UniLetterWordModel($data['language']);
         } elseif ($model == "bi") {
             $wordModel = new BiLetterWordModel($data['language']);
@@ -141,7 +142,8 @@ class HomeController extends AbstractController
             $wordModel = new TriLetterWordModel($data['language']);
         } elseif ($model == "biSyl") {
             $wordModel = new BiSyllableWordModel($data['language']);
-        }
+        }*/
+        $wordModel=WordModelRepository::getWordModel($model, $data['language']);
         $results2=$wordModel->generateWords($number-$toBeDone, $data['length']);
         $results=array_merge($results1,$results2);
 
@@ -149,14 +151,14 @@ class HomeController extends AbstractController
 
         return $results;
     }
-
+/*
     private function getAvailableLanguages() : array
     {
         $path=$_SERVER['DOCUMENT_ROOT'].'../assets/dictionnary/';
         $languages=VariousFileTools::getAvailableFiles($path);
         return array_map(function($x){return substr($x,0,-4);}, $languages);
     }
-
+*/
     private function validateFromGet(){
 
         $data=[];

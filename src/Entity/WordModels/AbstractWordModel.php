@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Services\Word;
+namespace App\Entity\WordModels;
+
+use App\Services\Name\Name;
 
 abstract class AbstractWordModel
 {
     protected $wordList;
     protected $modelName;
 
-    public function __construct()//array $wordList
+    public function __construct(array $wordList)//array $wordList
     {
-        $wordList=[];
 
+/*
         $args = func_get_args();
 
         if (is_array($args[0])) {
@@ -25,13 +27,18 @@ abstract class AbstractWordModel
                 $wordList[]=strtolower($line);
             }
         }
-
+*/
         $this->setWordList($wordList);
     }
 
     public function getWordList() : array
     {
         return $this->wordList;
+    }
+
+    public function setModelName(string $modelName)
+    {
+        $this->modelName=$modelName;
     }
 
     public abstract function setWordList($wordList) : void;
