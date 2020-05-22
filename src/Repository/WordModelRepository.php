@@ -9,9 +9,32 @@ use App\Entity\WordModels\TriLetterWordModel;
 use App\Entity\WordModels\BiSyllableLetterWordModel;
 
 use App\Services\Files\VariousFileTools;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpClient\HttpClient;
 
 class WordModelRepository
 {
+
+    public static function getWordModelByTheme(string $model, string $theme) : AbstractWordModel
+    {
+        $client = HttpClient::create();
+        $response = $client->request('GET', 'https://www.cnrtl.fr/synonymie/'.$theme);
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode==200) {
+            $content = $response->getContent();
+
+            $crawler = new Crawler($content);
+            $crawler = $crawler->filter('.syno_format');
+            //var_dump($crawler);exit();
+            foreach ($crawler as $domElement) {
+                $words[]= $domElement->textContent;
+            }
+        }
+
+        $wordModel=self::getWordModel($model, $words);
+        return $wordModel;
+    }
 
     public static function getWordModel() : AbstractWordModel
     {
@@ -25,13 +48,7 @@ class WordModelRepository
             $modelName="freeList";
         } elseif (is_string($wordList)) {
             $modelName=$wordList;
-            $path="../assets/dictionnary/".$wordList.".txt";
-            $file = fopen($path, 'rb');
-            $wordList=[];
-            while(!feof($file)) {
-                $line = fgets($file);
-                $wordList[]=strtolower($line);
-            }
+            $wordList = self::getWordListFromFile($modelName);
         }
 
         if ($type == "uni") {
@@ -49,7 +66,19 @@ class WordModelRepository
         return $wordModel;
     }
 
-    public static function getAvailableLanguages() : array
+    private static function getWordListFromFile(string $modelName) : array
+    {
+        $path="../assets/dictionnary/".$modelName.".txt";
+        $file = fopen($path, 'rb');
+        $wordList=[];
+        while(!feof($file)) {
+            $line = fgets($file);
+            $wordList[]=strtolower($line);
+        }
+        return $wordList;
+    }
+
+    public static function getLocalWordModel() : array
     {
         $path=$_SERVER['DOCUMENT_ROOT'].'../assets/dictionnary/';
         $languages=VariousFileTools::getAvailableFiles($path);

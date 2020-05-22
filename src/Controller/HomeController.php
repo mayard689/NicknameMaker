@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -30,7 +32,7 @@ class HomeController extends AbstractController
 
     public function __construct()
     {
-        $this->languages=WordModelRepository::getAvailableLanguages();
+        $this->languages=WordModelRepository::getLocalWordModel();
     }
 
     /**
@@ -112,14 +114,25 @@ class HomeController extends AbstractController
         $toBeDone=intdiv($number,2);
         $results=$wordModel->generateWords($toBeDone, $data['length']);
 
+        $force=50;
         if (!empty($data['inspiration1'])){
-            $wordModel1=WordModelRepository::getWordModel($model, [$data['inspiration1']]);
-
-            $wordModel->merge($wordModel1,150);
-
-            $results2=$wordModel->generateWords(5, $data['length']);
-            $results=array_merge($results,$results2);
+            $wordModel1=WordModelRepository::getWordModelByTheme($model, $data['inspiration1']);
+            //$wordModel->merge($wordModel1,50);
+            $wordModel=$wordModel1;
         }
+
+        if (!empty($data['inspiration2'])){
+            $wordModel1=WordModelRepository::getWordModelByTheme($model, $data['inspiration1']);
+            $wordModel->merge($wordModel1,50);
+        }
+        if (!empty($data['inspiration3'])){
+            $wordModel1=WordModelRepository::getWordModelByTheme($model, $data['inspiration1']);
+            $wordModel->merge($wordModel1,50);
+        }
+
+        $results2=$wordModel->generateWords(15, $data['length']);
+        $results=array_merge($results,$results2);
+
 
         $wordModel=WordModelRepository::getWordModel($model, "allemand");
         $results2=$wordModel->generateWords($number-$toBeDone, $data['length']);
