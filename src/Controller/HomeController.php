@@ -27,7 +27,7 @@ use App\Services\StringBeautifyer\StringBeautifyer;
 class HomeController extends AbstractController
 {
 
-    const USES=["consultant", "gamer"];
+    const USES=["consultant", "gamer", "nom valise"];
     private $languages;
 
     public function __construct()
@@ -66,8 +66,10 @@ class HomeController extends AbstractController
         //if everything is fine with data
         if ($isFormValid){
 
-            if (method_exists($this, $data['use'])) {
-                $results=call_user_func_array([$this, $data['use']], array($number, $data, $model));
+            $methodName=str_replace(" ",'',ucwords(trim($data['use'])));
+
+            if (method_exists($this, $methodName)) {
+                $results=call_user_func_array([$this, $methodName], array($number, $data, $model));
             } else {
                 $wordModel=WordModelRepository::getWordModel($model, $data['language']);
                 $results=$wordModel->generateWords($number, $data['length']);
@@ -114,29 +116,35 @@ class HomeController extends AbstractController
         $toBeDone=intdiv($number,2);
         $results=$wordModel->generateWords($toBeDone, $data['length']);
 
-        $force=50;
-        if (!empty($data['inspiration1'])){
-            $wordModel1=WordModelRepository::getWordModelByTheme($model, $data['inspiration1']);
-            //$wordModel->merge($wordModel1,50);
-            $wordModel=$wordModel1;
-        }
-
-        if (!empty($data['inspiration2'])){
-            $wordModel1=WordModelRepository::getWordModelByTheme($model, $data['inspiration1']);
-            $wordModel->merge($wordModel1,50);
-        }
-        if (!empty($data['inspiration3'])){
-            $wordModel1=WordModelRepository::getWordModelByTheme($model, $data['inspiration1']);
-            $wordModel->merge($wordModel1,50);
-        }
-
-        $results2=$wordModel->generateWords(15, $data['length']);
-        $results=array_merge($results,$results2);
-
-
         $wordModel=WordModelRepository::getWordModel($model, "allemand");
         $results2=$wordModel->generateWords($number-$toBeDone, $data['length']);
         $results=array_merge($results,$results2);
+
+        $this->setReferenceText($results, $data['name']);
+
+        return $results;
+    }
+
+    private function nomValise(int $number, array $data, string $model) : array
+    {
+        $wordModel=WordModelRepository::getWordModel($model, []);
+
+        if (!empty($data['inspiration1'])){
+            $wordModel1=WordModelRepository::getWordModelByTheme($model, $data['inspiration1']);
+            $wordModel->merge($wordModel1,1);
+        }
+
+        if (!empty($data['inspiration2'])){
+            $wordModel1=WordModelRepository::getWordModelByTheme($model, $data['inspiration2']);
+            $wordModel->merge($wordModel1,1);
+        }
+
+        if (!empty($data['inspiration3'])){
+            $wordModel1=WordModelRepository::getWordModelByTheme($model, $data['inspiration3']);
+            $wordModel->merge($wordModel1,1);
+        }
+
+        $results=$wordModel->generateWords($number, $data['length']);
 
         $this->setReferenceText($results, $data['name']);
 
