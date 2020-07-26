@@ -7,7 +7,6 @@ use App\Services\WordModel\WordModelMaker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
 use App\Entity\WordModels\UniLetterWordModel;
 use App\Services\StringBeautifyer\StringBeautifyer;
 
@@ -17,7 +16,6 @@ use App\Services\StringBeautifyer\StringBeautifyer;
  */
 class HomeController extends AbstractController
 {
-
     const USES=["consultant", "gamer", "nom valise", "nom valise 2"];
     private $languages;
 
@@ -254,3 +252,4 @@ class HomeController extends AbstractController
 
     }
 }
+
