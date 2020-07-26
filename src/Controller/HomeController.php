@@ -2,54 +2,36 @@
 
 namespace App\Controller;
 
+use App\Services\NickNameMaker\WordMerger;
+use App\Services\WordModel\WordModelMaker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Entity\WordModels\UniLetterWordModel;
-use App\Entity\WordModels\BiLetterWordModel;
-use App\Entity\WordModels\TriLetterWordModel;
-use App\Entity\WordModels\BiSyllableWordModel;
-
-use App\Repository\WordModelRepository;
-
-use App\Services\Files\VariousFileTools;
-
 use App\Services\StringBeautifyer\StringBeautifyer;
 
 /**
  * Class HomeController
  *
- * @Route("home/", name="home_")
  */
 class HomeController extends AbstractController
 {
 
-    const USES=["consultant", "gamer"];
+    const USES=["consultant", "gamer", "nom valise", "nom valise 2"];
     private $languages;
 
     public function __construct()
     {
-        $this->languages=WordModelRepository::getAvailableLanguages();
+        $this->languages=WordModelMaker::getLocalWordModel();
     }
 
     /**
-     * Return the index file with "adrien" and "mélanie" as proposed nicknames
-     * @return string
      *
-     * @Route("index", name="index")
-     */
-    public function index()
-    {
-        return $this->render('home/index.html.twig');
-    }
-
-    /**
-     * Return the index with 3 random propositions 10 characters long similar to the givne examples
      * @param array $model
      * @return Response
      *
-     * @Route("makeName/{model<uni|bi|tri|biSyl>}", name="makeName")
+     * @Route("{model<uni|bi|tri|biSyl>}", name="makeName")
      */
     public function makeName($model="tri", int $number=10)
     {
@@ -64,22 +46,12 @@ class HomeController extends AbstractController
         //if everything is fine with data
         if ($isFormValid){
 
-            if (method_exists($this, $data['use'])) {
-                $results=call_user_func_array([$this, $data['use']], array($number, $data, $model));
+            $methodName=str_replace(" ",'',ucwords(trim($data['use'])));
+
+            if (method_exists($this, $methodName)) {
+                $results=call_user_func_array([$this, $methodName], array($number, $data, $model));
             } else {
-                /*
-                $wordModel=null;
-                //select a model depending on the route
-                if ($model == "uni") {
-                    $wordModel = new UniLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
-                } elseif ($model == "bi") {
-                    $wordModel = new BiLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
-                } elseif ($model == "tri") {
-                    $wordModel = new TriLetterWordModel("../assets/dictionnary/".$data['language'].".txt");
-                } elseif ($model == "biSyl") {
-                    $wordModel = new BiSyllableWordModel("../assets/dictionnary/".$data['language'].".txt");
-                }*/
-                $wordModel=WordModelRepository::getWordModel($model, $data['language']);
+                $wordModel=WordModelMaker::getWordModel($model, $data['language']);
                 $results=$wordModel->generateWords($number, $data['length']);
                 $this->setReferenceText($results, $data['name']);
             }
@@ -111,55 +83,73 @@ class HomeController extends AbstractController
         $results=[];
 
         $results=array_merge($results,StringBeautifyer::beautifyWithSpecial($data['name'],$number));
+
         $this->setReferenceText($results, $data['name']);
         return $results;
     }
 
     private function gamer(int $number, array $data, string $model) :array
     {
-        $results1=[];
+        $results=[];
 
-        $data['language']="japonais";
-        /*if ($model == "uni") {
-            $wordModel = new UniLetterWordModel($data['language']);
-        } elseif ($model == "bi") {
-            $wordModel = new BiLetterWordModel($data['language']);
-        } elseif ($model == "tri") {
-            $wordModel = new TriLetterWordModel($data['language']);
-        } elseif ($model == "biSyl") {
-            $wordModel = new BiSyllableWordModel($data['language']);
-        }*/
-        $wordModel=WordModelRepository::getWordModel($model, $data['language']);
+        $wordModel=WordModelMaker::getWordModel($model, "japonais");
         $toBeDone=intdiv($number,2);
-        $results1=$wordModel->generateWords($toBeDone, $data['length']);
+        $results=$wordModel->generateWords($toBeDone, $data['length']);
 
-        $data['language']="allemand";
-        /*if ($model == "uni") {
-            $wordModel = new UniLetterWordModel($data['language']);
-        } elseif ($model == "bi") {
-            $wordModel = new BiLetterWordModel($data['language']);
-        } elseif ($model == "tri") {
-            $wordModel = new TriLetterWordModel($data['language']);
-        } elseif ($model == "biSyl") {
-            $wordModel = new BiSyllableWordModel($data['language']);
-        }*/
-        $wordModel=WordModelRepository::getWordModel($model, $data['language']);
+        $wordModel=WordModelMaker::getWordModel($model, "allemand");
         $results2=$wordModel->generateWords($number-$toBeDone, $data['length']);
-        $results=array_merge($results1,$results2);
+        $results=array_merge($results,$results2);
 
         $this->setReferenceText($results, $data['name']);
 
         return $results;
     }
-/*
-    private function getAvailableLanguages() : array
+
+    private function nomValise(int $number, array $data, string $model) : array
     {
-        $path=$_SERVER['DOCUMENT_ROOT'].'../assets/dictionnary/';
-        $languages=VariousFileTools::getAvailableFiles($path);
-        return array_map(function($x){return substr($x,0,-4);}, $languages);
+        $wordModel=WordModelMaker::getWordModel($model, []);
+
+        if (!empty($data['inspiration1'])){
+            $wordModel1=WordModelMaker::getWordModelByTheme($model, $data['inspiration1']);
+            $wordModel->merge($wordModel1,1);
+        }
+
+        if (!empty($data['inspiration2'])){
+            $wordModel1=WordModelMaker::getWordModelByTheme($model, $data['inspiration2']);
+            $wordModel->merge($wordModel1,1);
+        }
+
+        if (!empty($data['inspiration3'])){
+            $wordModel1=WordModelMaker::getWordModelByTheme($model, $data['inspiration3']);
+            $wordModel->merge($wordModel1,1);
+        }
+
+        $results=$wordModel->generateWords($number, $data['length']);
+
+        $this->setReferenceText($results, $data['name']);
+
+        return $results;
     }
-*/
+
+    private function nomValise2(int $number, array $data, string $model) : array
+    {
+
+
+        if (empty($data['inspiration1']) || empty($data['inspiration2']) || empty($data['inspiration3'])){
+            $this->redirectToRoute("");
+        }
+
+        $wordMerger= new WordMerger([$data['inspiration1'], $data['inspiration2'], $data['inspiration3']]);
+        $results=$wordMerger->generateWords($number);
+
+        $this->setReferenceText($results, $data['name']);
+
+        return $results;
+    }
+
     private function validateFromGet(){
+
+        $_GET=array_map('trim', $_GET);
 
         $data=[];
         $errors=[];
@@ -207,22 +197,44 @@ class HomeController extends AbstractController
             $data[$key]=$acceptedList[0];
         }
 
-        // USE CASE
-        $key='name';
-        if (isset($_GET[$key])) {
-            $requestedValue=trim($_GET[$key]);
-            if (!empty($requestedValue)) {
-                $data[$key]=$requestedValue;
-            } else {
-                $errors[$key]="Vous devez indiquer un prénom ou un nom";
-                $validate=false;
-            }
-        } else {
-            $errors[$key]="Vous devez indiquer un prénom ou un nom";
-            $validate=false;
-        }
+        // NAME
+        $this->checkIfExistsInGet(
+            'name',
+            true,
+            "Vous devez indiquer un prénom ou un nom",
+            $data, $errors, $validate);
+
+        // INSPIRATION1
+        $this->checkIfExistsInGet(
+            'inspiration1',
+            false,
+            null,
+            $data, $errors, $validate);
+        $this->checkIfExistsInGet(
+            'inspiration2',
+            false,
+            null,
+            $data, $errors, $validate);
+        $this->checkIfExistsInGet(
+            'inspiration3',
+            false,
+            null,
+            $data, $errors, $validate);
 
         // RETURN
+        return ['data' => $data, 'errors' => $errors, 'validate' => $validate];
+    }
+
+    private function checkIfExistsInGet($key, $required, $message, &$data, &$errors, &$validate) : array
+    {
+        if (!empty($_GET[$key])) {
+            $data[$key]=$_GET[$key];
+        } else {
+            $errors[$key]=$message;
+            if ($required) {
+                $validate=false;
+            }
+        }
         return ['data' => $data, 'errors' => $errors, 'validate' => $validate];
     }
 

@@ -1,4 +1,4 @@
-<form>
+<form action="">
 
     {% set input = {
             'label' : "votre nom",
@@ -19,6 +19,36 @@
     }
     %}
     {% include '/service/form/_selectText.html.twig' %}
+
+    {% set input = {
+        'label' : "Indiquez ici un mot qui vous inspire ",
+        'id' : "inspiration1",
+        'value' : data.inspiration1 ?? "",
+        'placeholder' : "Soleil",
+        'error' : errors.inspiration1 ?? ""
+    }
+    %}
+    {% include '/service/form/_textInput.html.twig' %}
+
+    {% set input = {
+        'label' : "Un second mot qui vous inspire... ",
+        'id' : "inspiration2",
+        'value' : data.inspiration2 ?? "",
+        'placeholder' : "Joyeux",
+        'error' : errors.inspiration2 ?? ""
+    }
+    %}
+    {% include '/service/form/_textInput.html.twig' %}
+
+    {% set input = {
+        'label' : "Et un dernier ",
+        'id' : "inspiration3",
+        'value' : data.inspiration3 ?? "",
+        'placeholder' : "Confort",
+        'error' : errors.inspiration3 ?? ""
+    }
+    %}
+    {% include '/service/form/_textInput.html.twig' %}
 
     {% set input = {
             'label' : "Longueur de votre pseudonyme",
