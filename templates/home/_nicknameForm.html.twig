@@ -1,12 +1,86 @@
-{% set input = {
-    'label' : "votre nom",
-    'id' : "name",
-    'value' : "merlin",
-    'placeholder' : "John Doe",
-    'error' : ""
+<form action="">
+
+    {% set input = {
+            'label' : "votre nom",
+            'id' : "name",
+            'value' : data.name ?? "",
+            'placeholder' : "John Doe",
+            'error' : errors.name ?? ""
+        }
+    %}
+    {% include '/service/form/_textInput.html.twig' %}
+
+    {% set input = {
+        'label' : "Utilisation du pseudonyme",
+        'id' : "use",
+        'value' : data.use ?? "",
+        'error' : errors.use ?? "",
+        'values' : uses ?? "",
     }
-%}
-{% include '/service/form/_textInput.html.twig' %}
+    %}
+    {% include '/service/form/_selectText.html.twig' %}
+
+    {% set input = {
+        'label' : "Indiquez ici un mot qui vous inspire ",
+        'id' : "inspiration1",
+        'value' : data.inspiration1 ?? "",
+        'placeholder' : "Soleil",
+        'error' : errors.inspiration1 ?? ""
+    }
+    %}
+    {% include '/service/form/_textInput.html.twig' %}
+
+    {% set input = {
+        'label' : "Un second mot qui vous inspire... ",
+        'id' : "inspiration2",
+        'value' : data.inspiration2 ?? "",
+        'placeholder' : "Joyeux",
+        'error' : errors.inspiration2 ?? ""
+    }
+    %}
+    {% include '/service/form/_textInput.html.twig' %}
+
+    {% set input = {
+        'label' : "Et un dernier ",
+        'id' : "inspiration3",
+        'value' : data.inspiration3 ?? "",
+        'placeholder' : "Confort",
+        'error' : errors.inspiration3 ?? ""
+    }
+    %}
+    {% include '/service/form/_textInput.html.twig' %}
+
+    {% set input = {
+            'label' : "Longueur de votre pseudonyme",
+            'id' : "length",
+            'value' : data.length ?? 7,
+            'placeholder' : "9",
+            'error' : errors.length ?? "",
+            'min' : 2,
+            'max' : 12
+        }
+    %}
+    {% include '/service/form/_rangeInput.html.twig' %}
+
+    {% set input = {
+        'label' : "Sonorité",
+        'id' : "language",
+        'value' : data.language ?? 7,
+        'error' : errors.language ?? "",
+        'values' : languages ?? "",
+    }
+    %}
+    {% include '/service/form/_selectText.html.twig' %}
+
+    {% set input = {
+            'label' : "",
+            'id' : "",
+            'value' : "Génerer mes pseudonymes",
+        }
+    %}
+    {% include '/service/form/_submitInput.html.twig' %}
+
+</form>
 
 {% set input = {
     'label' : "Longueur de votre pseudonyme",
