@@ -1,18 +1,19 @@
 <?php
 
-namespace App\Repository;
+namespace App\Services\WordModel;
 
 use App\Entity\WordModels\AbstractWordModel;
+use App\Entity\WordModels\BiSyllableWordModel;
 use App\Entity\WordModels\UniLetterWordModel;
 use App\Entity\WordModels\BiLetterWordModel;
 use App\Entity\WordModels\TriLetterWordModel;
-use App\Entity\WordModels\BiSyllableLetterWordModel;
+
 
 use App\Services\Files\VariousFileTools;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpClient\HttpClient;
 
-class WordModelRepository
+class WordModelMaker
 {
 
     public static function getWordModelByTheme(string $model, string $theme) : AbstractWordModel
@@ -21,12 +22,13 @@ class WordModelRepository
         $response = $client->request('GET', 'https://www.cnrtl.fr/synonymie/'.$theme);
         $statusCode = $response->getStatusCode();
 
+        $words=[];
         if ($statusCode==200) {
             $content = $response->getContent();
 
             $crawler = new Crawler($content);
             $crawler = $crawler->filter('.syno_format');
-            //var_dump($crawler);exit();
+
             foreach ($crawler as $domElement) {
                 $words[]= $domElement->textContent;
             }

@@ -2,56 +2,36 @@
 
 namespace App\Controller;
 
+use App\Services\NickNameMaker\WordMerger;
+use App\Services\WordModel\WordModelMaker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Entity\WordModels\UniLetterWordModel;
-use App\Entity\WordModels\BiLetterWordModel;
-use App\Entity\WordModels\TriLetterWordModel;
-use App\Entity\WordModels\BiSyllableWordModel;
-
-use App\Repository\WordModelRepository;
-
-use App\Services\Files\VariousFileTools;
-
 use App\Services\StringBeautifyer\StringBeautifyer;
 
 /**
  * Class HomeController
  *
- * @Route("home/", name="home_")
  */
 class HomeController extends AbstractController
 {
 
-    const USES=["consultant", "gamer", "nom valise"];
+    const USES=["consultant", "gamer", "nom valise", "nom valise 2"];
     private $languages;
 
     public function __construct()
     {
-        $this->languages=WordModelRepository::getLocalWordModel();
+        $this->languages=WordModelMaker::getLocalWordModel();
     }
 
     /**
-     * Return the index file with "adrien" and "mélanie" as proposed nicknames
-     * @return string
      *
-     * @Route("index", name="index")
-     */
-    public function index()
-    {
-        return $this->render('home/index.html.twig');
-    }
-
-    /**
-     * Return the index with 3 random propositions 10 characters long similar to the givne examples
      * @param array $model
      * @return Response
      *
-     * @Route("makeName/{model<uni|bi|tri|biSyl>}", name="makeName")
+     * @Route("{model<uni|bi|tri|biSyl>}", name="makeName")
      */
     public function makeName($model="tri", int $number=10)
     {
@@ -71,7 +51,7 @@ class HomeController extends AbstractController
             if (method_exists($this, $methodName)) {
                 $results=call_user_func_array([$this, $methodName], array($number, $data, $model));
             } else {
-                $wordModel=WordModelRepository::getWordModel($model, $data['language']);
+                $wordModel=WordModelMaker::getWordModel($model, $data['language']);
                 $results=$wordModel->generateWords($number, $data['length']);
                 $this->setReferenceText($results, $data['name']);
             }
@@ -112,11 +92,11 @@ class HomeController extends AbstractController
     {
         $results=[];
 
-        $wordModel=WordModelRepository::getWordModel($model, "japonais");
+        $wordModel=WordModelMaker::getWordModel($model, "japonais");
         $toBeDone=intdiv($number,2);
         $results=$wordModel->generateWords($toBeDone, $data['length']);
 
-        $wordModel=WordModelRepository::getWordModel($model, "allemand");
+        $wordModel=WordModelMaker::getWordModel($model, "allemand");
         $results2=$wordModel->generateWords($number-$toBeDone, $data['length']);
         $results=array_merge($results,$results2);
 
@@ -127,24 +107,40 @@ class HomeController extends AbstractController
 
     private function nomValise(int $number, array $data, string $model) : array
     {
-        $wordModel=WordModelRepository::getWordModel($model, []);
+        $wordModel=WordModelMaker::getWordModel($model, []);
 
         if (!empty($data['inspiration1'])){
-            $wordModel1=WordModelRepository::getWordModelByTheme($model, $data['inspiration1']);
+            $wordModel1=WordModelMaker::getWordModelByTheme($model, $data['inspiration1']);
             $wordModel->merge($wordModel1,1);
         }
 
         if (!empty($data['inspiration2'])){
-            $wordModel1=WordModelRepository::getWordModelByTheme($model, $data['inspiration2']);
+            $wordModel1=WordModelMaker::getWordModelByTheme($model, $data['inspiration2']);
             $wordModel->merge($wordModel1,1);
         }
 
         if (!empty($data['inspiration3'])){
-            $wordModel1=WordModelRepository::getWordModelByTheme($model, $data['inspiration3']);
+            $wordModel1=WordModelMaker::getWordModelByTheme($model, $data['inspiration3']);
             $wordModel->merge($wordModel1,1);
         }
 
         $results=$wordModel->generateWords($number, $data['length']);
+
+        $this->setReferenceText($results, $data['name']);
+
+        return $results;
+    }
+
+    private function nomValise2(int $number, array $data, string $model) : array
+    {
+
+
+        if (empty($data['inspiration1']) || empty($data['inspiration2']) || empty($data['inspiration3'])){
+            $this->redirectToRoute("");
+        }
+
+        $wordMerger= new WordMerger([$data['inspiration1'], $data['inspiration2'], $data['inspiration3']]);
+        $results=$wordMerger->generateWords($number);
 
         $this->setReferenceText($results, $data['name']);
 

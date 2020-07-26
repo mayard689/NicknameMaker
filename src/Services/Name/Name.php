@@ -41,7 +41,7 @@ class Name
         }
 
         $matches=[];
-        if (preg_match("#([b-df-hj-np-tv-z]{3})#", $shortName, $matches)) {
+        if (preg_match("#([b-df-hj-np-tv-xz]{3})#", $shortName, $matches)) {
             $this->setReport('spelling',"La suite de lettres (".$matches[0].") peut être difficile à lire. Il convient pour un usage écrit mais est 
             à éviter si vous prévoyez de l'utiliser à l'oral. Il peut gêner les commentateurs lors de concours.");
         } elseif (preg_match("#[1-9]#", $shortName)) {
@@ -78,11 +78,6 @@ class Name
             $this->notes['writtenSimilarities']=2;
         }
 
-    }
-
-    public function addReport(string $report)
-    {
-        $this->reportList[]=$report;
     }
 
     public function setReport(string $key, string $report)

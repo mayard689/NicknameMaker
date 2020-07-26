@@ -123,8 +123,8 @@ class BiSyllableWordModel extends AbstractWordModel
     private function getWordsAsSyllables($words) :array {
         $syllable = new Syllable(
             'fr',
-            dirname(__FILE__).'/languages',
-            dirname(__FILE__).'/cache',
+            $_SERVER['DOCUMENT_ROOT'].'../src/Services/Word/languages',
+            $_SERVER['DOCUMENT_ROOT'].'../src/Services/Word/cache',
             new Text('-')
         );
 
